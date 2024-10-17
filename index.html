@@ -1,0 +1,599 @@
+<!--[if IE]>
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+<![endif]-->
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>U-NAS</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=8" />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="/apps/gopeed/css/index.css?v=6.0.1&"
+    />
+    <script>
+      window.top.UNAS.SetAppState('Gopeed', 'active')
+    </script>
+    <script language="JavaScript" type="text/javascript">
+      jQuery.noConflict()
+      ;(function () {
+        getConfig()
+        jQuery('#gopeed_enable').click(function () {
+          if (jQuery('#gopeed_enable').prop('checked') == false) {
+            jQuery("[name='gopeed_input']").attr('disabled', true)
+            jQuery("[class='unas_select']").attr('disabled', true)
+            if (jQuery('#gopeed_enable').attr('oldvalue') == 'enable')
+              jQuery('#gopeed_apply').attr('class', 'unas_button')
+          }
+          if (jQuery('#gopeed_enable').prop('checked') == true) {
+            jQuery("[name='gopeed_input']").attr('disabled', false)
+            jQuery("[class='unas_select']").attr('disabled', false)
+            jQuery('#gopeed_enable').attr('disabled', false)
+          }
+        })
+        jQuery('#gopeed_port').keyup(gopeedCheckPortFunc)
+      })()
+
+      function getConfig() {
+        jQuery('#gopeed_manager_waiting_content').attr('style', 'display:block')
+        jQuery('#gopeed_manager_waiting_logo').attr('style', 'display:block')
+        jQuery.ajax({
+          url: '/apps/gopeed/includes/services.php',
+          type: 'POST',
+          async: true,
+          contentType: 'application/json',
+          data: JSON.stringify({ token: UToken, action: 'getConfig' }),
+          dataType: 'json',
+          timeout: 20000,
+          success: function (data) {
+            if (data.pass == 'exit') {
+              parent.location.assign('/desktop/')
+            } else {
+              if (
+                data.enable == true ||
+                jQuery('#gopeed_enable').prop('checked')
+              ) {
+                jQuery('#gopeed_enable').prop('checked', true)
+                jQuery('#gopeed_enable').attr('oldvalue', 'enable')
+              } else {
+                jQuery("[name='gopeed_input']").attr('disabled', true)
+                jQuery("[class='unas_select']").attr('disabled', true)
+                jQuery('#gopeed_enable').prop('checked', false)
+                jQuery('#gopeed_enable').attr('oldvalue', 'disable')
+              }
+
+              if (data.enable) {
+                jQuery('#gopeed_manage').attr(
+                  'url',
+                  'http://' + window.location.hostname + ':' + data.port
+                )
+                jQuery('#gopeed_manage').attr(
+                  'style',
+                  'width: 120px; display:inline-block;'
+                )
+              } else {
+                jQuery('#gopeed_manage').attr('style', 'display:none;')
+              }
+
+              var onlyShareFolders = data.shareFolders || []
+              var shareFolders = [...onlyShareFolders]
+              var selectFolder = data.configDir
+              if (
+                data.homesExtConfigFolder &&
+                data.homesExtConfigFolder !== ''
+              ) {
+                if (shareFolders) {
+                  shareFolders.unshift({
+                    path: data.homesExtConfigFolder,
+                  })
+                } else {
+                  shareFolders = [
+                    {
+                      path: data.homesExtConfigFolder,
+                    },
+                  ]
+                }
+                if (
+                  selectFolder === null ||
+                  selectFolder === undefined ||
+                  selectFolder === ''
+                ) {
+                  selectFolder = data.homesExtConfigFolder
+                }
+              }
+              var shareFolderAvail = share_folder_list(
+                'gopeed_config_dir',
+                shareFolders,
+                selectFolder
+              )
+
+              var storageShareFolders = [...onlyShareFolders]
+              if (storageShareFolders) {
+                storageShareFolders.unshift({
+                  path: '',
+                })
+              } else {
+                storageShareFolders = [
+                  {
+                    path: '',
+                  },
+                ]
+              }
+              share_folder_list(
+                'gopeed_download_dir',
+                storageShareFolders,
+                data.downloadDir
+              )
+
+              jQuery('#gopeed_username').val(data.username)
+              jQuery('#gopeed_password').val(data.password)
+              jQuery('#gopeed_api_token').val(data.apiToken)
+              jQuery('#gopeed_port').val(data.port)
+
+              if (shareFolderAvail) {
+                jQuery('#gopeed_apply').attr('class', 'unas_button')
+              } else {
+                jQuery('#gopeed_apply').attr('class', 'unas_button_disabled')
+              }
+            }
+            jQuery('#gopeed_manager_waiting_content').attr(
+              'style',
+              'display:none'
+            )
+            jQuery('#gopeed_manager_waiting_logo').attr('style', 'display:none')
+          },
+          error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(textStatus)
+            jQuery('#gopeed_manager_waiting_content').attr(
+              'style',
+              'display:none'
+            )
+            jQuery('#gopeed_manager_waiting_logo').attr('style', 'display:none')
+          },
+        })
+      }
+
+      function gopeedCheckPortFunc() {
+        if (gopeedCheckPort())
+          jQuery('#gopeed_apply').attr('class', 'unas_button')
+        else jQuery('#gopeed_apply').attr('class', 'unas_button_disabled')
+      }
+
+      function gopeedCheckPort() {
+        var portState = false
+        var port = parseInt(jQuery.trim(jQuery('#gopeed_port').val()), 10)
+        if (isNaN(port)) {
+          jQuery('#gopeed_port').val('')
+        } else {
+          jQuery('#gopeed_port').val(port)
+        }
+        if (usedPort === port) {
+          // 端口可正在用的端口是一样的，不需要验证
+          jQuery('#gopeed_port_warning').attr('class', 'input_warning')
+          jQuery('#gopeed_port_warning').attr('title', '')
+          jQuery('#gopeed_port_warning').html('')
+          portState = true
+        } else if (port > 65535 || port < 1) {
+          jQuery('#gopeed_port_warning').attr('class', 'input_warning_info')
+          jQuery('#gopeed_port_warning').attr(
+            'title',
+            UNAS._('Port should between 1 and 65535')
+          )
+          jQuery('#gopeed_port_warning').html(
+            '* ' + UNAS._('Port should between 1 and 65535')
+          )
+        } else {
+          jQuery.ajax({
+            url: '/apps/gopeed/includes/services.php',
+            type: 'POST',
+            async: false,
+            contentType: 'application/json',
+            data: JSON.stringify({
+              token: UToken,
+              port: port,
+              action: 'checkport',
+            }),
+            timeout: 20000,
+            dataType: 'json',
+            success: function (data) {
+              if (data.err === 1) {
+                jQuery('#gopeed_port_warning').attr(
+                  'class',
+                  'input_warning_info'
+                )
+                jQuery('#gopeed_port_warning').attr('title', UNAS._(data.msg))
+                jQuery('#gopeed_port_warning').html('* ' + UNAS._(data.msg))
+              } else {
+                jQuery('#gopeed_port_warning').attr('class', 'input_warning')
+                jQuery('#gopeed_port_warning').attr('title', '')
+                jQuery('#gopeed_port_warning').html('')
+                portState = true
+              }
+            },
+            error: function (XMLHttpRequest, textStatus, errorThrown) {
+              alert(textStatus)
+            },
+          })
+        }
+        return portState
+      }
+
+      function isNumeric(strval) {
+        var c
+        for (var i = 0; i < strval.length; i++) {
+          c = strval.charAt(i)
+          if (c < '0' || c > '9') {
+            return false
+          }
+        }
+        return true
+      }
+
+      function submit() {
+        jQuery('#gopeed_info').removeClass('error-info')
+        jQuery('#gopeed_info').removeClass('success-info')
+        jQuery('#gopeed_info').html('')
+        if (jQuery('#gopeed_apply').hasClass('unas_button_disabled')) {
+          return false
+        }
+        jQuery('#gopeed_manager_waiting_content').attr('style', 'display:block')
+        jQuery('#gopeed_manager_waiting_logo').attr('style', 'display:block')
+
+        var enable = jQuery('#gopeed_enable').prop('checked'),
+          configDir = jQuery('#gopeed_config_dir').val(),
+          downloadDir = jQuery('#gopeed_download_dir').val(),
+          username = jQuery('#gopeed_username').val(),
+          password = jQuery('#gopeed_password').val(),
+          apiToken = jQuery('#gopeed_api_token').val(),
+          port = jQuery('#gopeed_port').val()
+
+        if (username === null || username === undefined || username === '') {
+          jQuery('#gopeed_info').removeClass('success-info')
+          jQuery('#gopeed_info').addClass('error-info')
+          jQuery('#gopeed_info').html(UNAS._('Please set username'))
+          return false
+        } else if (
+          password === null ||
+          password === undefined ||
+          password === ''
+        ) {
+          jQuery('#gopeed_info').removeClass('success-info')
+          jQuery('#gopeed_info').addClass('error-info')
+          jQuery('#gopeed_info').html(UNAS._('Please set password'))
+          return false
+        } else if (
+          apiToken === null ||
+          apiToken === undefined ||
+          apiToken === ''
+        ) {
+          jQuery('#gopeed_info').removeClass('success-info')
+          jQuery('#gopeed_info').addClass('error-info')
+          jQuery('#gopeed_info').html(UNAS._('Please set ApiToken'))
+          return false
+        } else if (
+          downloadDir === null ||
+          downloadDir === undefined ||
+          downloadDir === ''
+        ) {
+          jQuery('#gopeed_info').removeClass('success-info')
+          jQuery('#gopeed_info').addClass('error-info')
+          jQuery('#gopeed_info').html(
+            UNAS._('Please select default download directory')
+          )
+          return false
+        }
+        var params = {
+          token: UToken,
+          enable: enable,
+          configDir: configDir,
+          downloadDir: downloadDir,
+          username: username,
+          password: password,
+          apiToken: apiToken,
+          port: port,
+          action: 'manage',
+        }
+        jQuery.ajax({
+          url: '/apps/gopeed/includes/services.php',
+          type: 'POST',
+          async: true,
+          contentType: 'application/json',
+          data: JSON.stringify(params),
+          timeout: 20000,
+          dataType: 'json',
+          success: function (data) {
+            if (data.err === 0) {
+              jQuery('#gopeed_info').removeClass('error-info')
+              jQuery('#gopeed_info').addClass('success-info')
+              jQuery('#gopeed_info').html(UNAS._('Operation successful'))
+            } else {
+              jQuery('#gopeed_info').removeClass('success-info')
+              jQuery('#gopeed_info').addClass('error-info')
+              jQuery('#gopeed_info').html(UNAS._(data.msg))
+            }
+            jQuery('#gopeed_manager_waiting_content').attr(
+              'style',
+              'display:none'
+            )
+            jQuery('#gopeed_manager_waiting_logo').attr('style', 'display:none')
+            getConfig()
+          },
+          error: function (XMLHttpRequest, textStatus, errorThrown) {
+            alert(textStatus)
+            jQuery('#gopeed_manager_waiting_content').attr(
+              'style',
+              'display:none'
+            )
+            jQuery('#gopeed_manager_waiting_logo').attr('style', 'display:none')
+          },
+        })
+      }
+
+      function openGopeed() {
+        window.open(jQuery('#gopeed_manage').attr('url'), '_blank')
+      }
+
+      // 功能函数，缩略太长的字符串
+      function trunc(str, len) {
+        if (str == null) return ''
+        var str_length = 0
+        var str_cut = new String()
+        for (var i = 0; i < str.length; i++) {
+          a = str.charAt(i)
+          str_length++
+          if (escape(a).length > 4) {
+            str_length++
+          }
+          str_cut = str_cut.concat(a)
+          if (str_length > len) {
+            str_cut = str_cut.concat('...')
+            return str_cut
+          }
+        }
+        if (str_length <= len) {
+          return str
+        }
+      }
+
+      function share_folder_list(elementId, folders, folder_selected) {
+        var folder_opts = ''
+        var selected = false
+        var shareFolderAvail = false
+        if (folders === null || folders === undefined || folders.length === 0) {
+          // 没有共享文件夹可用
+          shareFolderAvail = false
+          folder_opts =
+            '<option value="">' +
+            UNAS._(
+              '##$@gopeed@$##Enable Home Dir or create a SHARE FOLDER before select##$@gopeed@$##'
+            ) +
+            '</option>'
+        } else {
+          shareFolderAvail = true
+          for (var i = 0; i < folders.length; i++) {
+            var folderPath = folders[i].path
+            folder_opts +=
+              '<option value="' +
+              folderPath +
+              '"' +
+              ' title="' +
+              folderPath +
+              '"'
+            if (folderPath == folder_selected) {
+              folder_opts += ' selected="selected"'
+              selected = true
+            }
+            folder_opts += '>' + trunc(folderPath, 30) + '</option>'
+          }
+        }
+        jQuery('#' + elementId).html(folder_opts)
+        if (shareFolderAvail && !selected) {
+          jQuery('#' + elementId + ' option:first').prop('selected', 'selected')
+        }
+        return shareFolderAvail
+      }
+    </script>
+  </head>
+  <body>
+    <div id="gopeed" class="gopeed_manager">
+      <div
+        id="gopeed_manager_waiting_content"
+        class="unas_loading_modal"
+        style="display: none"
+      ></div>
+      <div
+        id="gopeed_manager_waiting_logo"
+        class="unas_loading"
+        style="display: none"
+      ></div>
+      <div class="unas_title">
+        <div
+          id="poweroptions_manager_immediately_tab"
+          class="unas_tab_sel"
+          poweroptionsitemtableid="poweroptions_manager_immediately_page"
+        >
+          <span>##$@gopeed@$##Gopeed##$@gopeed@$##</span>
+        </div>
+      </div>
+      <div class="unas_content">
+        <div
+          id="jv-unas_content_left"
+          class="unas_content_left"
+          style="
+            position: absolute;
+            width: calc(100% - 150px);
+            left: 0;
+            bottom: 60px;
+            top: 60px;
+          "
+        >
+          <div id="gopeed_info" class="info-div"></div>
+          <div class="unas_items gopeed-item-li">
+            <ul>
+              <li class="unas_item_li" style="margin-bottom: 10px">
+                <span>
+                  <div class="unas_checkbox">
+                    <input type="checkbox" id="gopeed_enable" oldvalue="" />
+                    <label for="gopeed_enable"></label>
+                  </div>
+                </span>
+                <!-- prettier-ignore -->
+                <span>##$@gopeed@$##Enable Gopeed Service##$@gopeed@$##</span>
+              </li>
+              <li class="unas_item_li" style="margin-bottom: 10px">
+                <!-- prettier-ignore -->
+                <span class="span_left" style="margin-left: 40px" >##$@gopeed@$##Configuration Directory:##$@gopeed@$##</span>
+                <span>
+                  <select class="unas_select" id="gopeed_config_dir"></select>
+                </span>
+                <label class="" id="gopeed_config_dir_warning" title=""></label>
+              </li>
+              <li class="unas_item_li" style="margin-bottom: 20px">
+                <!-- prettier-ignore -->
+                <span class="span_left" style="margin-left: 40px">##$@gopeed@$##Default Download Directory:##$@gopeed@$##</span>
+                <span>
+                  <select class="unas_select" id="gopeed_download_dir"></select>
+                </span>
+                <label
+                  style="float: right"
+                  id="gopeed_download_dir_warning"
+                  title=""
+                >
+                  <!-- prettier-ignore -->
+                  ##$@gopeed@$##Download directory config is only valid during the first initialization##$@gopeed@$##
+                </label>
+              </li>
+              <li class="unas_item_li" style="margin-bottom: 10px">
+                <span class="span_left" style="margin-left: 40px"
+                  >##$@gopeed@$##Port:##$@gopeed@$##</span
+                ><span
+                  ><input
+                    type="text"
+                    id="gopeed_port"
+                    name="gopeed_input"
+                    class="unas_input" /></span
+                ><label class="" id="gopeed_port_warning" title=""></label>
+              </li>
+              <li class="unas_item_li" style="margin-bottom: 10px">
+                <span class="span_left" style="margin-left: 40px"
+                  >##$@gopeed@$##Username:##$@gopeed@$##</span
+                ><span
+                  ><input
+                    type="text"
+                    id="gopeed_username"
+                    name="gopeed_input"
+                    class="unas_input" /></span
+                ><label class="" id="gopeed_username_warning" title=""></label>
+              </li>
+              <li class="unas_item_li" style="margin-bottom: 10px">
+                <span class="span_left" style="margin-left: 40px"
+                  >##$@gopeed@$##Password:##$@gopeed@$##</span
+                ><span
+                  ><input
+                    type="text"
+                    id="gopeed_password"
+                    name="gopeed_input"
+                    class="unas_input" /></span
+                ><label class="" id="gopeed_password_warning" title=""></label>
+              </li>
+              <li class="unas_item_li" style="margin-bottom: 10px">
+                <span class="span_left" style="margin-left: 40px"
+                  >##$@gopeed@$##ApiToken:##$@gopeed@$##</span
+                ><span
+                  ><input
+                    type="text"
+                    id="gopeed_api_token"
+                    name="gopeed_input"
+                    class="unas_input" /></span
+                ><label class="" id="gopeed_api_token_warning" title=""></label>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="unas_content_right">
+          <span class="gopeed_page_logo"></span>
+          <div class="project-addr">
+            <!-- prettier-ignore -->
+            <a href="https://github.com/GopeedLab/gopeed" target="_blank"
+              >##$@gopeed@$##Gopeed Project##$@gopeed@$##</a
+            >
+          </div>
+          <div class="project-addr">
+            <a
+              href="https://github.com/UNS-Third-Party-Applications/gopeed"
+              target="_blank"
+              >##$@gopeed@$##Current Project##$@gopeed@$##</a
+            >
+          </div>
+        </div>
+      </div>
+      <div class="unas_footer">
+        <a
+          id="gopeed_main_button"
+          target="_blank"
+          style="
+            width: 72px;
+            height: 32px;
+            display: inline-block;
+            margin-right: 10px;
+          "
+        >
+          <button
+            onClick="submit()"
+            class="unas_button_disabled"
+            id="gopeed_apply"
+          >
+            ##$@gopeed@$##Apply##$@gopeed@$##
+          </button>
+        </a>
+        <button
+          onClick="openGopeed()"
+          class="unas_button"
+          id="gopeed_manage"
+          style="display: none"
+        >
+          ##$@gopeed@$##Manage App##$@gopeed@$##
+        </button>
+      </div>
+    </div>
+    <script type="text/javascript">
+      ;(function () {
+        var rt = document.getElementById('gopeed')
+        var pageTranslators = window.top.UNAS.CreateNodesTranslators(
+          rt.parentNode
+        )
+        var OnChangeLanguage = function (e) {
+          for (var i = 0; i < pageTranslators.length; i++) {
+            var node = pageTranslators[i].node
+            var p = pageTranslators[i].translateProperty
+            node[p] = window.top.UNAS._(pageTranslators[i].originalText)
+          }
+          if (
+            jQuery('#gopeed_port_warning').attr('class') == 'input_warning_info'
+          ) {
+            gopeedCheckPort()
+          }
+        }
+        OnChangeLanguage()
+        window.top.UNAS.Event.addEvent('ChangeLanguage', OnChangeLanguage)
+        window.addEventListener(
+          'unload',
+          function (e) {
+            window.top.UNAS.Event.removeEvent(
+              'ChangeLanguage',
+              OnChangeLanguage
+            )
+            window.top.UNAS.SetAppState('Gopeed', 'inactive')
+          },
+          false
+        )
+      })()
+
+      jQuery('#jv-unas_content_left').mCustomScrollbar({
+        autoHideScrollbar: true,
+        theme: 'minimal-dark',
+      })
+    </script>
+  </body>
+</html>

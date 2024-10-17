@@ -1,0 +1,54 @@
+﻿{
+    "UNASTranslation": [
+        {
+            "language": "简体中文",
+            "table": [
+                [
+                    "Gopeed",
+                    "0",
+                    "Gopeed"
+                ],
+                [
+                    "MultiMedia",
+                    "0",
+                    "存储管理"
+                ],
+                [
+                    "This is an U-NAS audiobooks App.",
+                    "0",
+                    "软件包提供了一个有声书管理服务，使用Gopeed实现。"
+                ],
+                [
+                    "QingCheng",
+                    "0",
+                    "青城"
+                ]
+            ]
+        },
+        {
+            "language": "한국어",
+            "table": [
+                [
+                    "Gopeed",
+                    "0",
+                    "Gopeed"
+                ],
+                [
+                    "MultiMedia",
+                    "0",
+                    "멀티미디어"
+                ],
+                [
+                    "This is an U-NAS audiobooks App.",
+                    "0",
+                    "소프트웨어패키지는오디오북관리서비스를제공합니다."
+                ],
+                [
+                    "QingCheng",
+                    "0",
+                    "QingCheng"
+                ]
+            ]
+        }
+    ]
+}
