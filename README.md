@@ -1,6 +1,6 @@
 # gopeed
 
-适用于万由U-NAS 6的gopeed套件程序。本项目是将[gopeed](https://github.com/gopeed/gopeed)进行封装作为U-NAS套件，使其能在万由U-NAS系统上进行可视化的配置管理以及服务的启停操作。
+适用于万由U-NAS 6的gopeed套件程序。本项目是将[gopeed](https://github.com/GopeedLab/gopeed)进行封装作为U-NAS套件，使其能在万由U-NAS系统上进行可视化的配置管理以及服务的启停操作。
 
 ## 项目说明
 
