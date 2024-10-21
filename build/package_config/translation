@@ -14,9 +14,9 @@
                     "存储管理"
                 ],
                 [
-                    "This is an U-NAS audiobooks App.",
+                    "This is an U-NAS Downloader App.",
                     "0",
-                    "软件包提供了一个有声书管理服务，使用Gopeed实现。"
+                    "软件包提供了一个通用下载器，使用Gopeed实现。"
                 ],
                 [
                     "QingCheng",
@@ -41,7 +41,7 @@
                 [
                     "This is an U-NAS audiobooks App.",
                     "0",
-                    "소프트웨어패키지는오디오북관리서비스를제공합니다."
+                    "U-NAS다운로드애플리케이션입니다."
                 ],
                 [
                     "QingCheng",
