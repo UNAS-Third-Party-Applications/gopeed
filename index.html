@@ -9,7 +9,7 @@
     <link
       rel="stylesheet"
       type="text/css"
-      href="/apps/gopeed/css/index.css?v=6.0.1&"
+      href="/apps/gopeed/css/index.css?v=6.0.2&"
     />
     <script>
       window.top.UNAS.SetAppState('Gopeed', 'active')
@@ -127,7 +127,7 @@
 
               jQuery('#gopeed_username').val(data.username)
               jQuery('#gopeed_password').val(data.password)
-              jQuery('#gopeed_api_token').val(data.apiToken)
+              // jQuery('#gopeed_api_token').val(data.apiToken)
               jQuery('#gopeed_port').val(data.port)
 
               if (shareFolderAvail) {
@@ -236,15 +236,13 @@
         if (jQuery('#gopeed_apply').hasClass('unas_button_disabled')) {
           return false
         }
-        jQuery('#gopeed_manager_waiting_content').attr('style', 'display:block')
-        jQuery('#gopeed_manager_waiting_logo').attr('style', 'display:block')
 
         var enable = jQuery('#gopeed_enable').prop('checked'),
           configDir = jQuery('#gopeed_config_dir').val(),
           downloadDir = jQuery('#gopeed_download_dir').val(),
           username = jQuery('#gopeed_username').val(),
           password = jQuery('#gopeed_password').val(),
-          apiToken = jQuery('#gopeed_api_token').val(),
+          // apiToken = jQuery('#gopeed_api_token').val(),
           port = jQuery('#gopeed_port').val()
 
         if (username === null || username === undefined || username === '') {
@@ -261,7 +259,7 @@
           jQuery('#gopeed_info').addClass('error-info')
           jQuery('#gopeed_info').html(UNAS._('Please set password'))
           return false
-        } else if (
+        } /*  else if (
           apiToken === null ||
           apiToken === undefined ||
           apiToken === ''
@@ -270,7 +268,7 @@
           jQuery('#gopeed_info').addClass('error-info')
           jQuery('#gopeed_info').html(UNAS._('Please set ApiToken'))
           return false
-        } else if (
+        } */ else if (
           downloadDir === null ||
           downloadDir === undefined ||
           downloadDir === ''
@@ -282,6 +280,10 @@
           )
           return false
         }
+
+        jQuery('#gopeed_manager_waiting_content').attr('style', 'display:block')
+        jQuery('#gopeed_manager_waiting_logo').attr('style', 'display:block')
+
         var params = {
           token: UToken,
           enable: enable,
@@ -289,7 +291,8 @@
           downloadDir: downloadDir,
           username: username,
           password: password,
-          apiToken: apiToken,
+          // apiToken: apiToken,
+          apiToken: password,
           port: port,
           action: 'manage',
         }
@@ -496,7 +499,7 @@
                     class="unas_input" /></span
                 ><label class="" id="gopeed_password_warning" title=""></label>
               </li>
-              <li class="unas_item_li" style="margin-bottom: 10px">
+              <!-- <li class="unas_item_li" style="margin-bottom: 10px">
                 <span class="span_left" style="margin-left: 40px"
                   >##$@gopeed@$##ApiToken:##$@gopeed@$##</span
                 ><span
@@ -506,7 +509,7 @@
                     name="gopeed_input"
                     class="unas_input" /></span
                 ><label class="" id="gopeed_api_token_warning" title=""></label>
-              </li>
+              </li> -->
             </ul>
           </div>
         </div>

@@ -9,11 +9,11 @@ var GopeedApp = GopeedApp || {} //Define gopeed App namespace.
 GopeedApp.App = function () {
   this.id = 'Gopeed'
   this.name = 'Gopeed'
-  this.version = '6.0.1'
+  this.version = '6.0.2'
   this.active = false
-  this.menuIcon = '/apps/gopeed/images/logo.png?v=6.0.1&'
-  this.shortcutIcon = '/apps/gopeed/images/logo.png?v=6.0.1&'
-  this.entryUrl = '/apps/gopeed/index.html?v=6.0.1&'
+  this.menuIcon = '/apps/gopeed/images/logo.png?v=6.0.2&'
+  this.shortcutIcon = '/apps/gopeed/images/logo.png?v=6.0.2&'
+  this.entryUrl = '/apps/gopeed/index.html?v=6.0.2&'
   var self = this
   this.GopeedAppWindow = function () {
     if (UNAS.CheckAppState('Gopeed')) {
@@ -22,7 +22,7 @@ GopeedApp.App = function () {
     self.window = new MUI.Window({
       id: 'GopeedAppWindow',
       title: UNAS._('Gopeed'),
-      icon: '/apps/gopeed/images/logo_small.png?v=6.0.1&',
+      icon: '/apps/gopeed/images/logo_small.png?v=6.0.2&',
       loadMethod: 'xhr',
       width: 750,
       height: 480,
@@ -30,7 +30,7 @@ GopeedApp.App = function () {
       resizable: true,
       scrollbars: false,
       resizeLimit: { x: [200, 2000], y: [150, 1500] },
-      contentURL: '/apps/gopeed/index.html?v=6.0.1&',
+      contentURL: '/apps/gopeed/index.html?v=6.0.2&',
       require: { css: ['/apps/gopeed/css/index.css'] },
       onBeforeBuild: function () {
         UNAS.SetAppOpenedWindow('Gopeed', 'GopeedAppWindow')

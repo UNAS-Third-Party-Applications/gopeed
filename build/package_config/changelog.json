@@ -1,0 +1,82 @@
+{
+  "package": "gopeed-ext",
+  "changelog": [
+    {
+      "version": "6.0.2",
+      "date": "2024-10-29",
+      "items": [
+        {
+          "caption": "Set apToken with password",
+          "detail": [
+            "No longer need to separately set apiToken, but use password as apiToken"
+          ]
+        },
+        {
+          "caption": "Fix loading prompt",
+          "detail": [
+            "The problem of loading prompt continuously displaying and not closing when modifying parameter errors"
+          ]
+        }
+      ]
+    }
+  ],
+  "translation": {
+    "UNASTranslation": [
+      {
+        "language": "简体中文",
+        "table": [
+          ["Set apToken with password", "0", "使用password来设置apiToken"],
+          [
+            "No longer need to separately set apiToken, but use password as apiToken",
+            "0",
+            "不再单独设定apiToken，而是使用密码作为apiToken，避免因大多数用户不明白apiToken的用处而不知如何使用"
+          ],
+          ["Fix loading prompt", "0", "修正loading提示"],
+          [
+            "The problem of loading prompt continuously displaying and not closing when modifying parameter errors",
+            "0",
+            "修改参数错误时loading提示一直显示不会关闭的问题"
+          ]
+        ]
+      },
+      {
+        "language": "한국어",
+        "table": [
+          ["Set apToken with password", "0", "암호를사용하여apToken설정"],
+          [
+            "No longer need to separately set apiToken, but use password as apiToken",
+            "0",
+            "apiToken을개별적으로설정하지않고암호를apiToken으로사용"
+          ],
+          ["Fix loading prompt", "0", "로드프롬프트수정"],
+          [
+            "The problem of loading prompt continuously displaying and not closing when modifying parameter errors",
+            "0",
+            "매개변수오류를수정할때닫지않는문제가계속표시되도록프롬프트를로드합니다."
+          ]
+        ]
+      },
+      {
+        "language": "日本語",
+        "table": [
+          [
+            "Set apToken with password",
+            "0",
+            "パスワードを使用したapTokenの設定"
+          ],
+          [
+            "No longer need to separately set apiToken, but use password as apiToken",
+            "0",
+            "apiTokenを個別に設定する必要はなくなり、apiTokenとしてパスワードを使用"
+          ],
+          ["Fix loading prompt", "0", "リペアロードのヒント"],
+          [
+            "The problem of loading prompt continuously displaying and not closing when modifying parameter errors",
+            "0",
+            "パラメータエラーの修正時にロードプロンプトが表示され続けて閉じない問題"
+          ]
+        ]
+      }
+    ]
+  }
+}
